@@ -1,0 +1,35 @@
+{
+  "children": [
+    {
+      "component": "Container",
+      "props": {
+        "style": {
+          "padding": "50px",
+          "border": "1px solid black"
+        }
+      },
+      "children": [
+        {
+          "component": "Text",
+          "props": {
+            "style": {
+              "fontSize": "32px"
+            },
+            "text": "Hello World!"
+          }
+        }
+      ]
+    },
+    {
+      "component": "Container",
+      "props": {
+        "style": {
+          "padding": "50px",
+          "minWidth": "200px",
+          "minHeight": "200px",
+          "border": "1px solid black"
+        }
+      }
+    }
+  ]
+}
