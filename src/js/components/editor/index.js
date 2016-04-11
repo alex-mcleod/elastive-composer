@@ -1,8 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
+import Im from 'immutable';
 
 import State from 'state';
 import Registry from 'registry';
+
+import Library from './library';
 
 
 class EditorInner extends React.Component {
@@ -17,7 +20,8 @@ class EditorInner extends React.Component {
     super();
     this.state = {
       editableProps: null,
-      page: null
+      page: null,
+      editCount: 0
     };
   }
 
@@ -36,14 +40,41 @@ class EditorInner extends React.Component {
     }
   }
 
+  getKeyPathForComponent(component) {
+    const reference = component.props.reference;
+    const refParts = reference.split('.');
+    return _.flatten(_.map(refParts, (part) => ['children', part]));
+  }
+
+  startNewComponentPlacement = (componentName) => {
+    this.setState({ newComponentName: componentName });
+  }
+
   startEditing = (component) => {
-    this.setState({ editableComponent: component });
+    console.log(component);
+    if (this.state.newComponentName) {
+      this.addNewChild(component, this.state.newComponentName);
+    } else {
+      this.setState({ editableComponent: component, editCount: this.state.editCount + 1 });
+    }
+  }
+
+  addNewChild(component, newComponentName) {
+    const keyPath = this.getKeyPathForComponent(component);
+    const newComponent = Registry.getComponentWithName(newComponentName);
+    keyPath.push('children');
+    this.setState({
+      page: this.state.page.updateIn(keyPath, Im.List(), (children) => children.push(Im.fromJS({
+        component: newComponentName,
+        props: newComponent.defaultProps || {},
+        children: []
+      }))),
+      newComponentName: null
+    });
   }
 
   updateComponentProp = (propName, newValue) => {
-    const reference = this.state.editableComponent.props.reference;
-    const refParts = reference.split('.');
-    const keyPath = _.flatten(_.map(refParts, (part) => ['children', part]));
+    const keyPath = this.getKeyPathForComponent(this.state.editableComponent);
     keyPath.push('props');
     keyPath.push(propName);
     this.setState({
@@ -77,8 +108,11 @@ class EditorInner extends React.Component {
     if (this.state.editableComponent) {
       ComponentEditor = Registry.getEditorForComponent(this.state.editableComponent);
     }
+    // `editCount` key is required because otherwise if the same type of component
+    // is edited twice in a row, component is not automatically updated
     return ComponentEditor &&
       <ComponentEditor
+        key={ this.state.editCount }
         component={this.state.editableComponent} updateProp={this.updateComponentProp}
       />;
   }
@@ -88,6 +122,7 @@ class EditorInner extends React.Component {
     if (!page) return <h1>Loading...</h1>;
     return (
       <div>
+        <Library startPlacement={this.startNewComponentPlacement} />
         {this.renderPage()}
         {this.renderComponentEditor()}
       </div>
