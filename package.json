@@ -24,6 +24,7 @@
     "redux": "^3.4.0",
     "redux-api": "^0.9.3",
     "redux-thunk": "^2.0.1",
+    "rsvp": "^3.2.1",
     "scriptjs": "^2.5.8"
   },
   "devDependencies": {

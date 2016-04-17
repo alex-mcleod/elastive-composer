@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { applyElastiveMixin } from './elastive-mixin';
-import { BasicPreview } from './preview';
+import { applyElastiveMixin, BasicPreview, Types } from 'elastive-component';
 
 
 @applyElastiveMixin({
@@ -12,7 +11,9 @@ import { BasicPreview } from './preview';
 })
 export default class Container extends React.Component {
 
-  static propTypes = {}
+  static propTypes = {
+    style: Types.style
+  }
 
   static defaultProps = {
     style: {

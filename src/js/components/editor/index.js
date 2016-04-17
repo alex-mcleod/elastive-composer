@@ -32,9 +32,11 @@ class EditorInner extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.page.get('children')) {
-      this.setState({
-        page: props.page
-      });
+      Registry.setupForPage(props.page).then(() =>
+        this.setState({
+          page: props.page
+        })
+      );
     }
   }
 
@@ -49,7 +51,6 @@ class EditorInner extends React.Component {
   }
 
   startEditing = (component) => {
-    console.log(component);
     if (this.state.newComponentName) {
       this.addNewChild(component, this.state.newComponentName);
     } else {
@@ -71,8 +72,15 @@ class EditorInner extends React.Component {
     });
   }
 
-  updateComponentProp = (propName, newValue) => {
-    const keyPath = this.getKeyPathForComponent(this.state.editableComponent);
+  deleteComponent = (component) => {
+    const keyPath = this.getKeyPathForComponent(component);
+    this.setState({
+      page: this.state.page.deleteIn(keyPath)
+    });
+  }
+
+  updateComponentProp = (component, propName, newValue) => {
+    const keyPath = this.getKeyPathForComponent(component);
     keyPath.push('props');
     keyPath.push(propName);
     this.setState({
@@ -118,6 +126,7 @@ class EditorInner extends React.Component {
       <ComponentEditor
         key={ this.state.editCount }
         component={this.state.editableComponent} updateProp={this.updateComponentProp}
+        deleteComponent={this.deleteComponent}
       />;
   }
 
