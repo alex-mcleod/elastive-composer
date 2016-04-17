@@ -8,6 +8,6 @@ import {Editor} from 'components/editor';
 export class Home extends React.Component {
 
   render() {
-    return <Editor siteId='hello-world' pageId='home' />;
+    return <Editor pageId='1' />;
   }
 }

@@ -6,13 +6,13 @@ import State from 'state';
 import Registry from 'registry';
 
 import Library from './library';
+import Save from './save';
 
 
 class EditorInner extends React.Component {
 
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
-    siteId: React.PropTypes.string.isRequired,
     pageId: React.PropTypes.string.isRequired
   }
 
@@ -26,10 +26,8 @@ class EditorInner extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, siteId, pageId } = this.props;
-    dispatch(State.api.actions.page(
-      { siteId, pageId }
-    ));
+    const { dispatch, pageId } = this.props;
+    dispatch(State.api.actions.page.get(pageId));
   }
 
   componentWillReceiveProps(props) {
@@ -82,6 +80,12 @@ class EditorInner extends React.Component {
     });
   }
 
+  save = () => {
+    this.props.dispatch(
+      State.api.actions.page.update(this.props.pageId, this.state.page.toJS())
+    );
+  }
+
   renderChildren(children, pageLoc = '') {
     if (!children) return null;
     if (_.isString(children)) return children;
@@ -122,6 +126,7 @@ class EditorInner extends React.Component {
     if (!page) return <h1>Loading...</h1>;
     return (
       <div>
+        <Save save={this.save} />
         <Library startPlacement={this.startNewComponentPlacement} />
         {this.renderPage()}
         {this.renderComponentEditor()}

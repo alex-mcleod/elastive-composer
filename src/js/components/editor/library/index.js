@@ -42,7 +42,7 @@ export default class Library extends React.Component {
   renderClosed() {
     return (
       <div style={Library.styles.container} onClick={this.toggle}>
-        Add Component
+        Insert
       </div>
     );
   }
