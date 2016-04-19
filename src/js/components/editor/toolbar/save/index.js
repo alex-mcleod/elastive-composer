@@ -2,6 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import Radium from 'radium';
 
+import RaisedButton from 'material-ui';
+
 
 @Radium
 export default class Save extends React.Component {
@@ -14,23 +16,17 @@ export default class Save extends React.Component {
     container: {
       position: 'fixed',
       top: 0,
-      right: 0,
-      padding: 10,
-      backgroundColor: 'white',
-      border: '1px solid black',
-      cursor: 'pointer'
+      right: 0
     }
   }
 
   save = () => {
-    this.props.save()
+    this.props.save();
   }
 
   render() {
     return (
-      <div style={Save.styles.container} onClick={this.save}>
-        Save
-      </div>
+      <RaisedButton label="Save" primary />
     );
   }
 

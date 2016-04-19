@@ -5,8 +5,7 @@ import Im from 'immutable';
 import State from 'state';
 import Registry from 'registry';
 
-import Library from './library';
-import Save from './save';
+import MainToolbar from './toolbar';
 
 
 class EditorInner extends React.Component {
@@ -135,8 +134,8 @@ class EditorInner extends React.Component {
     if (!page) return <h1>Loading...</h1>;
     return (
       <div>
-        <Save save={this.save} />
-        <Library startPlacement={this.startNewComponentPlacement} />
+        <MainToolbar save={this.save} startPlacement={this.startNewComponentPlacement} />
+        {/*<Library startPlacement={this.startNewComponentPlacement} />*/}
         {this.renderPage()}
         {this.renderComponentEditor()}
       </div>
