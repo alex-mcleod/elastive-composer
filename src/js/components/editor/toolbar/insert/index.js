@@ -39,12 +39,18 @@ export default class Insert extends React.Component {
 
   selectComponent(name) {
     this.props.startPlacement(name);
+    this.setState({ open: false });
   }
 
   renderMenu() {
     return (
       <Menu>
-        <MenuItem primaryText="Text" />
+        { _.map(Registry.getAllComponents(), (component, id) => {
+          const displayName = component.elastiveMeta.name || id;
+          return <MenuItem
+            key={id} primaryText={displayName} onMouseUp={() => this.selectComponent(id)}
+          />;
+        })}
       </Menu>
     );
   }

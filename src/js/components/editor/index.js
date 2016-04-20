@@ -6,6 +6,7 @@ import State from 'state';
 import Registry from 'registry';
 
 import MainToolbar from './toolbar';
+import EditableContainer from './editable-container';
 
 
 class EditorInner extends React.Component {
@@ -31,11 +32,24 @@ class EditorInner extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.page.get('children')) {
-      Registry.setupForPage(props.page).then(() =>
+
+      Registry.setupForPage(props.page).then(() => {
         this.setState({
           page: props.page
-        })
-      );
+        });
+      });
+    }
+  }
+
+  startNewComponentPlacement = (componentName) => {
+    this.setState({ newComponentName: componentName, editableComponent: null });
+  }
+
+  onPageComponentClick = (component) => {
+    if (this.state.newComponentName) {
+      this.addNewChild(component, this.state.newComponentName);
+    } else {
+      this.setState({ editableComponent: component, editCount: this.state.editCount + 1 });
     }
   }
 
@@ -43,18 +57,6 @@ class EditorInner extends React.Component {
     const reference = component.props.reference;
     const refParts = reference.split('.');
     return _.flatten(_.map(refParts, (part) => ['children', part]));
-  }
-
-  startNewComponentPlacement = (componentName) => {
-    this.setState({ newComponentName: componentName });
-  }
-
-  startEditing = (component) => {
-    if (this.state.newComponentName) {
-      this.addNewChild(component, this.state.newComponentName);
-    } else {
-      this.setState({ editableComponent: component, editCount: this.state.editCount + 1 });
-    }
   }
 
   addNewChild(component, newComponentName) {
@@ -93,27 +95,6 @@ class EditorInner extends React.Component {
     );
   }
 
-  renderChildren(children, pageLoc = '') {
-    if (!children) return null;
-    if (_.isString(children)) return children;
-    return _.map(children, (child, i) => {
-      let Component = Registry.getComponentWithName(child.component);
-      let ref = pageLoc + i;
-      return (
-        <Component
-          name={child.component} reference={ref} key={ref}
-          {...child.props} startEditing={this.startEditing}
-        >
-          {this.renderChildren(child.children, `${ref}.`)}
-        </Component>
-      );
-    });
-  }
-
-  renderPage() {
-    return <div>{this.renderChildren(this.state.page.get('children').toJS())}</div>;
-  }
-
   renderComponentEditor() {
     let ComponentEditor;
     if (this.state.editableComponent) {
@@ -129,13 +110,40 @@ class EditorInner extends React.Component {
       />;
   }
 
+  renderChildren(children, pageLoc = '') {
+    if (!children) return null;
+    if (_.isString(children)) return children;
+    return _.map(children, (child, i) => {
+      let Component = Registry.getComponentWithName(child.component);
+      let ref = pageLoc + i;
+      return (
+        <EditableContainer
+          key={ref}
+          startEditing={this.onPageComponentClick}
+          componentBeingEdited={this.state.editableComponent}
+          showHoverHighlight={Boolean(this.state.newComponentName)}
+        >
+          <Component
+            name={child.component} reference={ref}
+            {...child.props}
+          >
+            {this.renderChildren(child.children, `${ref}.`)}
+          </Component>
+        </EditableContainer>
+      );
+    });
+  }
+
+  renderPage() {
+    return <div>{this.renderChildren(this.state.page.get('children').toJS())}</div>;
+  }
+
   render() {
     const { page } = this.state;
     if (!page) return <h1>Loading...</h1>;
     return (
       <div>
         <MainToolbar save={this.save} startPlacement={this.startNewComponentPlacement} />
-        {/*<Library startPlacement={this.startNewComponentPlacement} />*/}
         {this.renderPage()}
         {this.renderComponentEditor()}
       </div>

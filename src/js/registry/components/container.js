@@ -5,9 +5,7 @@ import { applyElastiveMixin, BasicPreview, Types } from 'elastive-component';
 
 @applyElastiveMixin({
   editableProps: ['style'],
-  preview(props) {
-    return <BasicPreview onClick={props.onClick} name="Container" />;
-  }
+  name: 'Container'
 })
 export default class Container extends React.Component {
 
@@ -24,6 +22,6 @@ export default class Container extends React.Component {
   }
 
   render() {
-    return <div style={this.props.style} onClick={ this.startEditing }>{this.props.children}</div>;
+    return <div style={this.props.style}>{this.props.children}</div>;
   }
 }

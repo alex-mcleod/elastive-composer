@@ -5,9 +5,7 @@ import { applyElastiveMixin, BasicPreview, Types } from 'elastive-component';
 
 @applyElastiveMixin({
   editableProps: ['text', 'style'],
-  preview(props) {
-    return <BasicPreview onClick={props.onClick} name="Text" />;
-  }
+  name: 'Text'
 })
 export default class Text extends React.Component {
 
@@ -23,7 +21,7 @@ export default class Text extends React.Component {
 
   render() {
     return (
-      <p style={this.props.style} onClick={ this.startEditing }>
+      <p style={this.props.style}>
         {this.props.text}
       </p>
     );
