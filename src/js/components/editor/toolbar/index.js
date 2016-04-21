@@ -26,7 +26,8 @@ export default class MainToolbar extends React.Component {
     container: {
       position: 'fixed',
       top: 0,
-      right: 0
+      right: 0,
+      width: '100%'
     }
   }
 

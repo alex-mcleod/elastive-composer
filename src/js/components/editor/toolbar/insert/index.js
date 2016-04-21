@@ -7,8 +7,13 @@ import {
   Menu,
   MenuItem,
   FontIcon,
-  RaisedButton
+  RaisedButton,
+  Dialog,
+  FlatButton,
+  Popover
 } from 'material-ui';
+import Formsy from 'formsy-react';
+import { FormsyText } from 'formsy-material-ui';
 
 import Registry from 'registry';
 
@@ -29,12 +34,27 @@ export default class Insert extends React.Component {
   constructor() {
     super();
     this.state = {
-      open: false
+      open: false,
+      dialogOpen: false,
+      canSubmit: false
     };
   }
 
-  toggle = () => {
-    this.setState({ open: !this.state.open });
+  openMenu = (event) => {
+    this.setState({ open: true, anchorEl: event.currentTarget });
+  }
+
+  closeMenu = () => {
+    this.setState({ open: false, anchorEl: null });
+  }
+
+  showAddComponentsDialog = () => {
+    this.setState({ dialogOpen: true });
+    this.closeMenu();
+  }
+
+  closeDialog = () => {
+    this.setState({ dialogOpen: false });
   }
 
   selectComponent(name) {
@@ -42,30 +62,106 @@ export default class Insert extends React.Component {
     this.setState({ open: false });
   }
 
+  enableSubmit = () => {
+    this.setState({
+      canSubmit: true,
+    });
+  }
+
+  disableSubmit = () => {
+    this.setState({
+      canSubmit: false,
+    });
+  }
+
+  submitForm = (data) => {
+    alert(JSON.stringify(data, null, 4));
+  }
+
+  notifyFormError(data) {
+    console.error('Form error:', data);
+  }
+
   renderMenu() {
     return (
-      <Menu>
+      <Menu listStyle={{backgroundColor: 'white'}}>
         { _.map(Registry.getAllComponents(), (component, id) => {
           const displayName = component.elastiveMeta.name || id;
-          return <MenuItem
-            key={id} primaryText={displayName} onMouseUp={() => this.selectComponent(id)}
-          />;
+          return (
+            <MenuItem
+              key={id} primaryText={displayName} onMouseUp={() => this.selectComponent(id)}
+            />
+          );
         })}
+        <MenuItem primaryText="Add component library..." onMouseUp={this.showAddComponentsDialog} />
       </Menu>
     );
   }
 
   render() {
+    const actions = [
+      <FlatButton
+        label="OK"
+        primary
+        keyboardFocused
+        onTouchTap={this.closeDialog}
+      />,
+    ];
     return (
       <div style={this.constructor.styles.container}>
         <RaisedButton
           label="Insert"
           primary icon={<FontIcon className="material-icons">add_box</FontIcon>}
-          onMouseUp={this.toggle}
+          onMouseUp={this.openMenu}
         />
-        <ReactTransitionGroup>
-          { this.state.open && this.renderMenu() }
-        </ReactTransitionGroup>
+        <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={this.closeMenu}
+        >
+          <Menu>
+            { _.map(Registry.getAllComponents(), (component, id) => {
+              const displayName = component.elastiveMeta.name || id;
+              return (
+                <MenuItem
+                  key={id} primaryText={displayName} onMouseUp={() => this.selectComponent(id)}
+                />
+              );
+            })}
+            <MenuItem primaryText="Add component library..." onMouseUp={this.showAddComponentsDialog} />
+          </Menu>
+        </Popover>
+        <Dialog
+          title="Add component library"
+          actions={actions}
+          modal
+          open={this.state.dialogOpen}
+        >
+          Enter the URL of an Elastive component library. Should be in the form of
+          a single JS file.
+
+          <Formsy.Form
+            onValid={this.enableSubmit}
+            onInvalid={this.disableSubmit}
+            onValidSubmit={this.submitForm}
+            onInvalidSubmit={this.notifyFormError}
+          >
+            <FormsyText
+              name="url"
+              validations="isUrl"
+              validationError="Please enter a valid URL"
+              required
+              floatingLabelText="Library URL"
+            />
+            <RaisedButton
+              type="submit"
+              label="Submit"
+              disabled={!this.state.canSubmit}
+            />
+          </Formsy.Form>
+        </Dialog>
       </div>
     );
   }

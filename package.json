@@ -12,10 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "elastive-component": "alex-mcleod/elastive-component",
+    "formsy-material-ui": "^0.4.0",
+    "formsy-react": "^0.18.0",
     "immutable": "^3.7.6",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.9.0",
-    "material-ui": "^0.14.4",
+    "material-ui": "^0.15.0-beta.1",
     "radium": "^0.17.1",
     "react": "^15.0.1",
     "react-addons-transition-group": "^15.0.1",
