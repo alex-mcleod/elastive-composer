@@ -24,8 +24,11 @@ function getAllChildren(page) {
 export default {
   setupForPage(page) {
     const referencedComponents = getAllChildren(page);
-    const uniqueNames = _.uniq(referencedComponents.map(co => co.get('component')).toJS());
     const promises = [];
+    const pageLibs = page.get('componentLibraries');
+    // TODO Get libs from 'componentLibrary' instead
+    let uniqueNames = _.uniq(referencedComponents.map(co => co.get('component')).toJS());
+    if (pageLibs) uniqueNames = uniqueNames.concat(pageLibs.toJS());
     uniqueNames.forEach(name => {
       if (!internalComponents[name]) {
         // Assume this is an external component

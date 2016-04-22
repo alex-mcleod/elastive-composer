@@ -32,7 +32,6 @@ class Editor extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.page.get('children')) {
-
       Registry.setupForPage(props.page).then(() => {
         this.setState({
           page: props.page
@@ -43,6 +42,17 @@ class Editor extends React.Component {
 
   startNewComponentPlacement = (componentName) => {
     this.setState({ newComponentName: componentName, editableComponent: null });
+  }
+
+  addComponentLibrary = (libraryURL) => {
+    let curLibraries = this.state.page.get('componentLibraries', Im.List());
+    curLibraries = curLibraries.push(libraryURL);
+    const page = this.state.page.set('componentLibraries', curLibraries);
+    Registry.setupForPage(page).then(() => {
+      this.setState({
+        page
+      });
+    });
   }
 
   onPageComponentClick = (component) => {
@@ -143,7 +153,11 @@ class Editor extends React.Component {
     if (!page) return <h1>Loading...</h1>;
     return (
       <div>
-        <MainToolbar save={this.save} startPlacement={this.startNewComponentPlacement} />
+        <MainToolbar
+          save={this.save}
+          startPlacement={this.startNewComponentPlacement}
+          addComponentLibrary={this.addComponentLibrary}
+        />
         {this.renderPage()}
         {this.renderComponentEditor()}
       </div>

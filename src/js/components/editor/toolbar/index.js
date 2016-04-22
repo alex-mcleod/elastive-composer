@@ -19,7 +19,8 @@ export default class MainToolbar extends React.Component {
 
   static propTypes = {
     save: React.PropTypes.func.isRequired,
-    startPlacement: React.PropTypes.func.isRequired
+    startPlacement: React.PropTypes.func.isRequired,
+    addComponentLibrary: React.PropTypes.func.isRequired
   }
 
   static styles = {
@@ -41,6 +42,7 @@ export default class MainToolbar extends React.Component {
         <ToolbarGroup firstChild float="left">
           <Insert
             startPlacement={this.props.startPlacement}
+            addComponentLibrary={this.props.addComponentLibrary}
           />
         </ToolbarGroup>
         <ToolbarGroup float="right">

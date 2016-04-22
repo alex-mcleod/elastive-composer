@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactTransitionGroup from 'react-addons-transition-group';
 import _ from 'lodash';
 import Radium from 'radium';
 
@@ -21,7 +20,8 @@ import Registry from 'registry';
 export default class Insert extends React.Component {
 
   static propTypes = {
-    startPlacement: React.PropTypes.func.isRequired
+    startPlacement: React.PropTypes.func.isRequired,
+    addComponentLibrary: React.PropTypes.func.isRequired
   }
 
   static styles = {
@@ -74,7 +74,10 @@ export default class Insert extends React.Component {
   }
 
   onSubmitForm = (data) => {
-    console.log(data);
+    // TODO Should use promise so that if library
+    // is not valid the user can be alerted
+    this.props.addComponentLibrary(data.URL);
+    this.closeDialog();
   }
 
   renderMenu() {
@@ -95,6 +98,11 @@ export default class Insert extends React.Component {
 
   render() {
     const actions = [
+      <FlatButton
+        label="Cancel"
+        secondary={true}
+        onTouchTap={this.closeDialog}
+      />,
       <FlatButton
         label="OK"
         primary
