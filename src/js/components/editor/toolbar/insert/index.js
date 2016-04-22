@@ -12,8 +12,7 @@ import {
   FlatButton,
   Popover
 } from 'material-ui';
-import Formsy from 'formsy-react';
-import { FormsyText } from 'formsy-material-ui';
+import AddComponentLibraryForm from './add-component-library-form';
 
 import Registry from 'registry';
 
@@ -74,12 +73,8 @@ export default class Insert extends React.Component {
     });
   }
 
-  submitForm = (data) => {
-    alert(JSON.stringify(data, null, 4));
-  }
-
-  notifyFormError(data) {
-    console.error('Form error:', data);
+  onSubmitForm = (data) => {
+    console.log(data);
   }
 
   renderMenu() {
@@ -104,7 +99,7 @@ export default class Insert extends React.Component {
         label="OK"
         primary
         keyboardFocused
-        onTouchTap={this.closeDialog}
+        onTouchTap={()=>this.refs.coLibForm.submit()}
       />,
     ];
     return (
@@ -142,25 +137,7 @@ export default class Insert extends React.Component {
           Enter the URL of an Elastive component library. Should be in the form of
           a single JS file.
 
-          <Formsy.Form
-            onValid={this.enableSubmit}
-            onInvalid={this.disableSubmit}
-            onValidSubmit={this.submitForm}
-            onInvalidSubmit={this.notifyFormError}
-          >
-            <FormsyText
-              name="url"
-              validations="isUrl"
-              validationError="Please enter a valid URL"
-              required
-              floatingLabelText="Library URL"
-            />
-            <RaisedButton
-              type="submit"
-              label="Submit"
-              disabled={!this.state.canSubmit}
-            />
-          </Formsy.Form>
+          <AddComponentLibraryForm ref='coLibForm' onSubmit={this.onSubmitForm} />
         </Dialog>
       </div>
     );

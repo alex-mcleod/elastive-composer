@@ -9,7 +9,7 @@ import MainToolbar from './toolbar';
 import EditableContainer from './editable-container';
 
 
-class EditorInner extends React.Component {
+class Editor extends React.Component {
 
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
@@ -157,4 +157,4 @@ function select(state) {
 }
 
 
-export const Editor = State.connect(select)(EditorInner);
+export default State.connect(select)(Editor);
