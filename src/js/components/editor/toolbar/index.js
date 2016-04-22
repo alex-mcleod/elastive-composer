@@ -2,6 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import Radium from 'radium';
 
+import Style from 'style';
+
 import {
   IconMenu,
   FontIcon,
@@ -28,7 +30,9 @@ export default class MainToolbar extends React.Component {
       position: 'fixed',
       top: 0,
       right: 0,
-      width: '100%'
+      width: '100%',
+      backgroundColor: Style.vars.colors.grey300,
+      borderBottom: `1px solid ${Style.vars.colors.grey500}`
     }
   }
 

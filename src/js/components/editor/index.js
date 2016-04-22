@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import Im from 'immutable';
+import Radium from 'radium';
 
 import State from 'state';
 import Registry from 'registry';
@@ -9,11 +10,20 @@ import MainToolbar from './toolbar';
 import EditableContainer from './editable-container';
 
 
+@Radium
 class Editor extends React.Component {
 
   static propTypes = {
     dispatch: React.PropTypes.func.isRequired,
     pageId: React.PropTypes.string.isRequired
+  }
+
+  static styles = {
+    container: {},
+    pageContainer: {
+      margin: '90px 25px',
+      backgroundColor: 'white'
+    }
   }
 
   constructor() {
@@ -150,15 +160,16 @@ class Editor extends React.Component {
 
   render() {
     const { page } = this.state;
-    if (!page) return <h1>Loading...</h1>;
     return (
-      <div>
+      <div style={this.constructor.styles.container}>
         <MainToolbar
           save={this.save}
           startPlacement={this.startNewComponentPlacement}
           addComponentLibrary={this.addComponentLibrary}
         />
-        {this.renderPage()}
+        <div style={this.constructor.styles.pageContainer}>
+          {page ? this.renderPage() : <h1>Loading...</h1>}
+        </div>
         {this.renderComponentEditor()}
       </div>
     );

@@ -3,6 +3,11 @@ import _ from 'lodash';
 import Im from 'immutable';
 import Radium from 'radium';
 
+import Style from 'style';
+
+
+console.log(Style);
+
 
 @Radium
 export default class EditableContainer extends React.Component {
@@ -15,7 +20,7 @@ export default class EditableContainer extends React.Component {
 
   static styles = {
     highlight: {
-      outline: '1px solid blue'
+      outline: `1px solid ${Style.vars.colors.lightBlue500}`
     }
   }
 
