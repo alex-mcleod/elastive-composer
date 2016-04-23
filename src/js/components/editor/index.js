@@ -50,8 +50,8 @@ class Editor extends React.Component {
     }
   }
 
-  startNewComponentPlacement = (componentName) => {
-    this.setState({ newComponentName: componentName, editableComponent: null });
+  startNewComponentPlacement = (componentData) => {
+    this.setState({ newComponentData: componentData, editableComponent: null });
   }
 
   addComponentLibrary = (libraryURL) => {
@@ -66,8 +66,8 @@ class Editor extends React.Component {
   }
 
   onPageComponentClick = (component) => {
-    if (this.state.newComponentName) {
-      this.addNewChild(component, this.state.newComponentName);
+    if (this.state.newComponentData) {
+      this.addNewChild(component, this.state.newComponentData);
     } else {
       this.setState({ editableComponent: component, editCount: this.state.editCount + 1 });
     }
@@ -79,17 +79,19 @@ class Editor extends React.Component {
     return _.flatten(_.map(refParts, (part) => ['children', part]));
   }
 
-  addNewChild(component, newComponentName) {
+  addNewChild(component, newComponentData) {
     const keyPath = this.getKeyPathForComponent(component);
-    const newComponent = Registry.getComponentWithName(newComponentName);
+    const { library, name } = newComponentData;
+    const newComponent = Registry.getComponentByLibAndName(library, name);
     keyPath.push('children');
     this.setState({
       page: this.state.page.updateIn(keyPath, Im.List(), (children) => children.push(Im.fromJS({
-        component: newComponentName,
+        name,
+        library,
         props: newComponent.defaultProps || {},
         children: []
       }))),
-      newComponentName: null
+      newComponentData: null
     });
   }
 
@@ -116,35 +118,38 @@ class Editor extends React.Component {
   }
 
   renderComponentEditor() {
-    let ComponentEditor;
-    if (this.state.editableComponent) {
-      ComponentEditor = Registry.getEditorForComponent(this.state.editableComponent);
-    }
+    if (!this.state.editableComponent) return null;
+    const [ComponentEditor, editable] = Registry.getEditorForComponent(
+      this.state.editableComponent
+    );
     // `editCount` key is required because otherwise if the same type of component
     // is edited twice in a row, component is not automatically updated
-    return ComponentEditor &&
+    return (
       <ComponentEditor
         key={ this.state.editCount }
-        component={this.state.editableComponent} updateProp={this.updateComponentProp}
+        component={this.state.editableComponent}
+        editableProps={editable}
+        updateProp={this.updateComponentProp}
         deleteComponent={this.deleteComponent}
-      />;
+      />
+    );
   }
 
   renderChildren(children, pageLoc = '') {
     if (!children) return null;
     if (_.isString(children)) return children;
     return _.map(children, (child, i) => {
-      let Component = Registry.getComponentWithName(child.component);
+      let Component = Registry.getComponentByLibAndName(child.library, child.name);
       let ref = pageLoc + i;
       return (
         <EditableContainer
           key={ref}
           startEditing={this.onPageComponentClick}
           componentBeingEdited={this.state.editableComponent}
-          showHoverHighlight={Boolean(this.state.newComponentName)}
+          showHoverHighlight={Boolean(this.state.newComponentData)}
         >
           <Component
-            name={child.component} reference={ref}
+            reference={ref}
             {...child.props}
           >
             {this.renderChildren(child.children, `${ref}.`)}

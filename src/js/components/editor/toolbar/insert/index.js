@@ -100,15 +100,15 @@ export default class Insert extends React.Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        secondary={true}
+        secondary
         onTouchTap={this.closeDialog}
       />,
       <FlatButton
         label="OK"
         primary
         keyboardFocused
-        onTouchTap={()=>this.refs.coLibForm.submit()}
-      />,
+        onTouchTap={() => this.refs.coLibForm.submit()}
+      />
     ];
     return (
       <div style={this.constructor.styles.container}>
@@ -120,20 +120,27 @@ export default class Insert extends React.Component {
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
           onRequestClose={this.closeMenu}
         >
           <Menu>
-            { _.map(Registry.getAllComponents(), (component, id) => {
-              const displayName = component.elastiveMeta.name || id;
+            { _.map(Registry.getAllComponentInfo(), (coInfo) => {
+              const displayName = coInfo.name;
               return (
                 <MenuItem
-                  key={id} primaryText={displayName} onMouseUp={() => this.selectComponent(id)}
+                  key={coInfo.library + coInfo.name}
+                  primaryText={displayName}
+                  onMouseUp={() => this.selectComponent({
+                    name: coInfo.name,
+                    library: coInfo.library
+                  })}
                 />
               );
             })}
-            <MenuItem primaryText="Add component library..." onMouseUp={this.showAddComponentsDialog} />
+            <MenuItem
+              primaryText="Add component library..." onMouseUp={this.showAddComponentsDialog}
+            />
           </Menu>
         </Popover>
         <Dialog

@@ -6,9 +6,6 @@ import Radium from 'radium';
 import Style from 'style';
 
 
-console.log(Style);
-
-
 @Radium
 export default class EditableContainer extends React.Component {
 

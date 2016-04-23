@@ -4,15 +4,17 @@ import Im from 'immutable';
 import $script from 'scriptjs';
 import RSVP from 'rsvp';
 
-import internalComponents from './components';
+import internalLibInfo from './components';
 
 
-const components = internalComponents;
+const libs = {
+  __internal__: internalLibInfo
+};
 
 
 function getAllChildren(page) {
   let subChildren = Im.List();
-  let children = page.get('children');
+  const children = page.get('children');
   if (!children) return null;
   children.forEach(child =>
     subChildren = subChildren.concat(getAllChildren(child))
@@ -22,39 +24,73 @@ function getAllChildren(page) {
 
 
 export default {
+
   setupForPage(page) {
     const referencedComponents = getAllChildren(page);
     const promises = [];
     const pageLibs = page.get('componentLibraries');
-    // TODO Get libs from 'componentLibrary' instead
-    let uniqueNames = _.uniq(referencedComponents.map(co => co.get('component')).toJS());
-    if (pageLibs) uniqueNames = uniqueNames.concat(pageLibs.toJS());
-    uniqueNames.forEach(name => {
-      if (!internalComponents[name]) {
-        // Assume this is an external component
-        const promise = new RSVP.Promise(function(resolve, reject) {
-          $script([name], () => {
-            const component = window.__latestElastiveComponent__;
-            if (!component) throw new Error(`Could not load external component via ${name}`);
-            components[name] = window.__latestElastiveComponent__;
-            window.__latestElastiveComponent__ = null;
-            resolve();
-          });
+    // Find all component libraries
+    let componentLibraryURLs = referencedComponents.map(co => co.get('library')).toJS();
+    if (pageLibs) componentLibraryURLs = componentLibraryURLs.concat(pageLibs.toJS());
+    componentLibraryURLs = _.filter(_.uniq(componentLibraryURLs), Boolean);
+    componentLibraryURLs.forEach(libURL => {
+      // TODO - Allow refreshing of libs
+      if (libs[libURL]) return;
+      // Fetch the library
+      const promise = new RSVP.Promise((resolve, reject) => {
+        $script([libURL], () => {
+          const libInfo = window.__latestElastiveLibrary__;
+          if (!libInfo) throw new Error(`Could not load external library via ${libURL}`);
+          libs[libURL] = libInfo;
+          console.log("Loaded library:", libInfo);
+          window.__latestElastiveLibrary__ = null;
+          resolve();
         });
-        promises.push(promise);
-      }
+      });
+      promises.push(promise);
     });
     return RSVP.all(promises);
   },
-  getComponentWithName(componentName) {
-    const component = components[componentName];
-    if (!component) throw new Error(`${componentName} does not exist in the registry`);
-    return component;
+
+  getComponentByLibAndName(libId, componentName) {
+    libId = libId || '__internal__';
+    const lib = libs[libId];
+    const componentInfo = lib.components[componentName];
+    if (!componentInfo) {
+      throw new Error(`${componentName} with library ${libId} does not exist in the registry`);
+    }
+    return componentInfo.component;
   },
+
   getEditorForComponent(component) {
-    return component.constructor.elastiveMeta.editor;
+    // TODO - Cache this
+    let editor;
+    let props;
+    _.each(libs, (libInfo) => {
+      _.each(libInfo.components, (coInfo) => {
+        if (coInfo.component === component.constructor) {
+          editor = coInfo.editor;
+          props = coInfo.editableProps;
+        }
+      });
+    });
+    if (!editor) {
+      throw new Error(`Could not find editor for component`);
+    }
+    return [editor, props];
   },
-  getAllComponents() {
-    return components;
+
+  getAllComponentInfo() {
+    // TODO - Cache this
+    const info = [];
+    _.each(libs, (libInfo, url) => {
+      _.each(libInfo.components, (coInfo, name) => {
+        info.push({
+          library: url,
+          name
+        });
+      });
+    });
+    return info;
   }
 };

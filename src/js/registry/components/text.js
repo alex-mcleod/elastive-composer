@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { applyElastiveMixin, BasicPreview, Types } from 'elastive-component';
+import { Types } from 'elastive-component';
 
 
-@applyElastiveMixin({
-  editableProps: ['text', 'style'],
-  name: 'Text'
-})
+// @applyElastiveMixin({
+//   editableProps: ['text', 'style'],
+//   name: 'Text'
+// })
 export default class Text extends React.Component {
 
   static propTypes = {
