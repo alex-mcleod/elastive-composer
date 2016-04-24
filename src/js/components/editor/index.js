@@ -3,11 +3,13 @@ import _ from 'lodash';
 import Im from 'immutable';
 import Radium from 'radium';
 
+import Style from 'style';
 import State from 'state';
 import Registry from 'registry';
 
 import MainToolbar from './toolbar';
 import EditableContainer from './editable-container';
+import Tree from './tree';
 
 
 @Radium
@@ -19,10 +21,19 @@ class Editor extends React.Component {
   }
 
   static styles = {
-    container: {},
     pageContainer: {
-      margin: '90px 25px',
+      margin: '90px 215px',
       backgroundColor: 'white'
+    },
+    coEditorContainer: {
+      position: 'fixed',
+      top: 56,
+      right: 0,
+      padding: 20,
+      width: 150,
+      height: '100%',
+      backgroundColor: Style.vars.colors.grey300,
+      borderLeft: `1px solid ${Style.vars.colors.grey500}`
     }
   }
 
@@ -118,20 +129,24 @@ class Editor extends React.Component {
   }
 
   renderComponentEditor() {
-    if (!this.state.editableComponent) return null;
-    const [ComponentEditor, editable] = Registry.getEditorForComponent(
-      this.state.editableComponent
-    );
+    let ComponentEditor, editable;
+    if (this.state.editableComponent) {
+      [ComponentEditor, editable] = Registry.getEditorForComponent(
+        this.state.editableComponent
+      );
+    }
     // `editCount` key is required because otherwise if the same type of component
     // is edited twice in a row, component is not automatically updated
     return (
-      <ComponentEditor
-        key={ this.state.editCount }
-        component={this.state.editableComponent}
-        editableProps={editable}
-        updateProp={this.updateComponentProp}
-        deleteComponent={this.deleteComponent}
-      />
+      <div style={this.constructor.styles.coEditorContainer}>
+        { ComponentEditor && <ComponentEditor
+          key={ this.state.editCount }
+          component={this.state.editableComponent}
+          editableProps={editable}
+          updateProp={this.updateComponentProp}
+          deleteComponent={this.deleteComponent}
+        /> }
+      </div>
     );
   }
 
@@ -172,6 +187,7 @@ class Editor extends React.Component {
           startPlacement={this.startNewComponentPlacement}
           addComponentLibrary={this.addComponentLibrary}
         />
+        { page && <Tree page={page} /> }
         <div style={this.constructor.styles.pageContainer}>
           {page ? this.renderPage() : <h1>Loading...</h1>}
         </div>
