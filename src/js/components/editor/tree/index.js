@@ -33,6 +33,11 @@ class Child extends React.Component {
     },
     label: {
       paddingBottom: 5
+    },
+    icon: {
+      fontSize: 12,
+      marginRight: 5,
+      color: Style.vars.colors.grey800
     }
   }
 
@@ -55,7 +60,7 @@ class Child extends React.Component {
     return (
       <div style={this.constructor.styles.container} onClick={ this.toggle }>
         <div onClick={ this.toggle }>
-          <FontIcon className="material-icons">{ icon }</FontIcon>
+          <FontIcon style={this.constructor.styles.icon} className="material-icons">{ icon }</FontIcon>
           <span style={this.constructor.styles.label}>{ this.props.child.get('name') }</span>
         </div>
         {

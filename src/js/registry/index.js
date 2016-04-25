@@ -4,6 +4,7 @@ import Im from 'immutable';
 import $script from 'scriptjs';
 import RSVP from 'rsvp';
 
+import StandardComponentEditor from './components/component-editor';
 import internalLibInfo from './components';
 
 
@@ -75,7 +76,7 @@ export default {
       });
     });
     if (!editor) {
-      throw new Error(`Could not find editor for component`);
+      editor = StandardComponentEditor;
     }
     return [editor, props];
   },

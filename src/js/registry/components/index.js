@@ -1,6 +1,5 @@
 import Container from './container';
 import Text from './text';
-import { StandardComponentEditor } from 'elastive-component';
 
 export default {
   Container,
@@ -12,13 +11,11 @@ export default {
   components: {
     Text: {
       component: Text,
-      editableProps: ['text', 'style'],
-      editor: StandardComponentEditor
+      editableProps: ['text', 'style']
     },
     Container: {
       component: Container,
-      editableProps: ['style'],
-      editor: StandardComponentEditor
+      editableProps: ['style']
     }
   }
 };
