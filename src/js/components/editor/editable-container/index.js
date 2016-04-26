@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import Im from 'immutable';
 import Radium from 'radium';
@@ -17,7 +18,11 @@ export default class EditableContainer extends React.Component {
 
   static styles = {
     highlight: {
-      outline: `1px solid ${Style.vars.colors.lightBlue500}`
+      outline: `1px solid ${Style.vars.colors.lightBlue500}`,
+      position: 'fixed',
+      // Prevents highlight from swallowing clicks
+      pointerEvents: 'none',
+      zIndex: 999
     }
   }
 
@@ -46,8 +51,21 @@ export default class EditableContainer extends React.Component {
     });
   }
 
+  renderHighlight() {
+    const node = ReactDOM.findDOMNode(this.refs.child);
+    const width = node.offsetWidth;
+    const height = node.offsetHeight;
+    const bounds = node.getBoundingClientRect();
+    const style = _.merge(
+      { width, height, top: bounds.top, left: bounds.left },
+      this.constructor.styles.highlight
+    );
+    return (
+      <div style={style} />
+    );
+  }
+
   render() {
-    const { styles } = this.constructor;
     let child = React.Children.only(this.props.children);
     let showHighlight;
     if (!this.props.showHoverHighlight) {
@@ -58,17 +76,22 @@ export default class EditableContainer extends React.Component {
       showHighlight = true;
     }
     child = React.cloneElement(React.Children.only(this.props.children), {
-      ref: 'child',
-      style: _.merge(
-        {},
-        child.props.style,
-        showHighlight && styles.highlight
-      )
+      ref: 'child'
+      // style: _.merge(
+      //   {},
+      //   child.props.style,
+      //   showHighlight && styles.highlight
+      // )
     });
-    return <span
-      onMouseOver={this.onMouseOver}
-      onMouseLeave={this.onMouseLeave}
-      onClick={this.startEditing}
-    >{child}</span>;
+    return (
+      <span
+        onMouseOver={this.onMouseOver}
+        onMouseLeave={this.onMouseLeave}
+        onClick={this.startEditing}
+      >
+        {showHighlight && this.renderHighlight()}
+        {child}
+      </span>
+    );
   }
 }

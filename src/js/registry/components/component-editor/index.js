@@ -1,8 +1,11 @@
 import React from 'react';
 import Radium from 'radium';
 
+import Style from 'style';
+
 import {
-  RaisedButton
+  RaisedButton,
+  Divider
 } from 'material-ui';
 
 import editors from './prop-editors';
@@ -39,7 +42,18 @@ export default class StandardComponentEditor extends React.Component {
 
   static styles = {
     container: {
-      position: 'relative'
+      position: 'relative',
+      height: '100%'
+    },
+    delete: {
+      position: 'absolute',
+      bottom: 100,
+      left: 30
+    },
+    divider: {
+      backgroundColor: Style.vars.colors.grey500,
+      marginBottom: 20,
+      marginTop: 20
     }
   }
 
@@ -60,14 +74,17 @@ export default class StandardComponentEditor extends React.Component {
       return null;
     }
     return (
-      <Component
-        key={editablePropName}
-        update={(newVal) => {
-          this.updateProp(editablePropName, newVal);
-        }}
-        name={editablePropName}
-        currentValue={value}
-      />
+      <div>
+        <Component
+          key={editablePropName}
+          update={(newVal) => {
+            this.updateProp(editablePropName, newVal);
+          }}
+          name={editablePropName}
+          currentValue={value}
+        />
+        <Divider style={this.constructor.styles.divider}/>
+      </div>
     );
   }
 
@@ -75,9 +92,13 @@ export default class StandardComponentEditor extends React.Component {
     const { component } = this.props;
     const editable = this.props.editableProps;
     return (
-      <div style={StandardComponentEditor.styles.container}>
+      <div style={this.constructor.styles.container}>
         {editable.map(this.renderEditableProp)}
-        <RaisedButton onClick={this.deleteComponent} label="Delete" />
+        <RaisedButton
+          style={this.constructor.styles.delete}
+          onClick={this.deleteComponent}
+          label="Delete"
+        />
       </div>
     );
   }
