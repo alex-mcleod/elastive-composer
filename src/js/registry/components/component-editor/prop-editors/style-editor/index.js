@@ -40,6 +40,16 @@ export default class StyleEditor extends React.Component {
     };
   }
 
+  componentDidUpdate() {
+    const lastAttr = this.state.lastAddedAttr;
+    if (lastAttr) {
+      const editor = this.refs[`${lastAttr}Editor`];
+      // Focus on new attr editor if we just added it
+      _.defer(() => editor.focus());
+      this.setState({ lastAddedAttr: null });
+    }
+  }
+
   showAddAttr = () => {
     this.setState({ showAddAttr: true, anchorEl: ReactDOM.findDOMNode(this.refs.add) });
   }
@@ -50,10 +60,17 @@ export default class StyleEditor extends React.Component {
     }));
   }
 
+  onNewAttrSelect = (attr) => {
+    // Will create a new attr on style object
+    this.updateAttr(attr, '');
+    this.setState({ showAddAttr: false, lastAddedAttr: attr });
+  }
+
   renderEditorForStyleAttr = (curVal, attr) => {
     return (
       <div key={attr}>
         <AttrEditor
+          ref={`${attr}Editor`}
           name={attr} update={ (newVal) => this.updateAttr(attr, newVal) } currentValue={ curVal }
         />
       </div>
@@ -69,7 +86,12 @@ export default class StyleEditor extends React.Component {
             add
           </FontIcon>
         </h5>
-        <AttrSelector open={this.state.showAddAttr} onSelect={this.onNewAttrSelect} anchorEl={ this.state.anchorEl }/>
+        <AttrSelector
+          open={this.state.showAddAttr}
+          onSelect={this.onNewAttrSelect}
+          anchorEl={ this.state.anchorEl }
+          onRequestClose={ () => this.setState({ showAddAttr: false })}
+        />
         {_.map(this.props.currentValue, this.renderEditorForStyleAttr)}
       </div>
     );

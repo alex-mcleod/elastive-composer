@@ -33,6 +33,24 @@ export default class EditableContainer extends React.Component {
     };
   }
 
+  componentDidUpdate() {
+    const node = ReactDOM.findDOMNode(this.refs.child);
+    const highlightAttrs = this.getHighlightAttrs(node);
+    if (!_.isEqual(highlightAttrs, this.state.highlightAttrs)) {
+      this.setState({ highlightAttrs });
+    }
+  }
+
+  getHighlightAttrs(node) {
+    const bounds = node.getBoundingClientRect();
+    return {
+      width: node.offsetWidth,
+      height: node.offsetHeight,
+      top: bounds.top,
+      left: bounds.left
+    }
+  }
+
   startEditing = (evt) => {
     evt.stopPropagation();
     this.props.startEditing(this.refs.child);
@@ -52,13 +70,12 @@ export default class EditableContainer extends React.Component {
   }
 
   renderHighlight() {
-    const node = ReactDOM.findDOMNode(this.refs.child);
-    const width = node.offsetWidth;
-    const height = node.offsetHeight;
-    const bounds = node.getBoundingClientRect();
+    const highlightAttrs = this.state.highlightAttrs;
+    if (!highlightAttrs) return null;
     const style = _.merge(
-      { width, height, top: bounds.top, left: bounds.left },
-      this.constructor.styles.highlight
+      {},
+      this.constructor.styles.highlight,
+      highlightAttrs
     );
     return (
       <div style={style} />
