@@ -67,6 +67,7 @@ export class AttrSelector extends React.Component {
           fullWidth
           onNewRequest={this.onSelect}
           style={this.constructor.styles.input}
+          menuProps={{ maxHeight: 400 }}
         />
       </Popover>
     );
