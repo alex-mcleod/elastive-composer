@@ -84,6 +84,15 @@ class Editor extends React.Component {
     }
   }
 
+  selectComponentWithReference = (reference) => {
+    const container = this.refs[`${reference}Container`];
+    if (!container) {
+      console.warn('Container for reference not available');
+      return;
+    }
+    this.onPageComponentClick(container.refs.child);
+  }
+
   getKeyPathForComponent(component) {
     const reference = component.props.reference;
     const refParts = reference.split('.');
@@ -159,6 +168,7 @@ class Editor extends React.Component {
       return (
         <EditableContainer
           key={ref}
+          ref={ref + 'Container'}
           startEditing={this.onPageComponentClick}
           componentBeingEdited={this.state.editableComponent}
           showHoverHighlight={Boolean(this.state.newComponentData)}
@@ -187,7 +197,13 @@ class Editor extends React.Component {
           startPlacement={this.startNewComponentPlacement}
           addComponentLibrary={this.addComponentLibrary}
         />
-        { page && <Tree page={page} /> }
+        { page && (
+            <Tree
+              page={page}
+              selectComponentWithReference={this.selectComponentWithReference}
+            />
+          )
+        }
         <div style={this.constructor.styles.pageContainer}>
           {page ? this.renderPage() : <h1>Loading...</h1>}
         </div>

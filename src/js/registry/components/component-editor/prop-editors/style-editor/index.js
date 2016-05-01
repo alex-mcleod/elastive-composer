@@ -51,7 +51,10 @@ export default class StyleEditor extends React.Component {
   }
 
   showAddAttr = () => {
-    this.setState({ showAddAttr: true, anchorEl: ReactDOM.findDOMNode(this.refs.add) });
+    this.setState({ anchorEl: ReactDOM.findDOMNode(this.refs.add) });
+    _.defer(() => {
+      this.setState({ showAddAttr: true });
+    });
   }
 
   updateAttr = (attr, newValue) => {
@@ -78,21 +81,26 @@ export default class StyleEditor extends React.Component {
   }
 
   render() {
+    const curStyle = this.props.currentValue;
+    const sortedAttrs = _.sortBy(_.keys(curStyle));
     return (
       <div>
         <h5 style={this.constructor.styles.heading}>
           Style
-          <FontIcon ref="add" style={this.constructor.styles.icon} className="material-icons" onClick={this.showAddAttr}>
+          <FontIcon
+            ref="add" style={this.constructor.styles.icon} className="material-icons"
+            onClick={this.showAddAttr}
+          >
             add
           </FontIcon>
         </h5>
-        <AttrSelector
+        { this.state.anchorEl && <AttrSelector
           open={this.state.showAddAttr}
           onSelect={this.onNewAttrSelect}
           anchorEl={ this.state.anchorEl }
           onRequestClose={ () => this.setState({ showAddAttr: false })}
-        />
-        {_.map(this.props.currentValue, this.renderEditorForStyleAttr)}
+        /> }
+        {_.map(sortedAttrs, (a) => this.renderEditorForStyleAttr(curStyle[a], a))}
       </div>
     );
   }

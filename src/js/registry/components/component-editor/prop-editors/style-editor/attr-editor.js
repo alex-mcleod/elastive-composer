@@ -17,7 +17,6 @@ export class AttrSelector extends React.Component {
   static propTypes = {
     anchorEl: React.PropTypes.object.isRequired,
     open: React.PropTypes.bool.isRequired,
-    update: React.PropTypes.func.isRequired,
     onSelect: React.PropTypes.func.isRequired,
     onRequestClose: React.PropTypes.func.isRequired
   }
@@ -39,10 +38,6 @@ export class AttrSelector extends React.Component {
         this.refs.autoComplete.refs.searchTextField.input.focus();
       }, 250);
     }
-  }
-
-  onChange = (event) => {
-    this.props.update(event.target.value);
   }
 
   onSelect = (attr) => {
@@ -81,7 +76,10 @@ export class AttrEditor extends React.Component {
   static propTypes = {
     name: React.PropTypes.string.isRequired,
     update: React.PropTypes.func.isRequired,
-    currentValue: React.PropTypes.string.isRequired
+    currentValue: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.number
+    ])
   }
 
   static styles = {
@@ -91,7 +89,14 @@ export class AttrEditor extends React.Component {
   }
 
   onChange = (event) => {
-    this.props.update(event.target.value);
+    let val = event.target.value;
+    // Prevent react warning about unitless string
+    // values
+    const asInt = parseInt(val);
+    if (!_.isNaN(asInt)) {
+      val = asInt;
+    }
+    this.props.update(val);
   }
 
   focus() {
@@ -102,8 +107,12 @@ export class AttrEditor extends React.Component {
     return (
       <div>
         <TextField
-          floatingLabelText={ _.startCase(this.props.name) } style={this.constructor.styles.input}
-          onChange={this.onChange} type="text" value={this.props.currentValue}
+          floatingLabelText={ _.startCase(this.props.name) }
+          style={this.constructor.styles.input}
+          onChange={this.onChange}
+          type="text"
+          value={this.props.currentValue}
+          onBlur={this.onBlur}
           ref="textField"
         />
       </div>

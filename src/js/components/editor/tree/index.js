@@ -19,7 +19,8 @@ class Child extends React.Component {
 
   static propTypes = {
     child: React.PropTypes.instanceOf(Im.Map).isRequired,
-    reference: React.PropTypes.string.isRequired
+    reference: React.PropTypes.string.isRequired,
+    onSelect: React.PropTypes.func.isRequired
   }
 
   static styles = {
@@ -53,22 +54,36 @@ class Child extends React.Component {
     this.setState({ open: !this.state.open });
   }
 
+  onSelect = () => {
+    this.props.onSelect(this.props.reference);
+  }
+
   render() {
     const children = this.props.child.get('children');
     const { open } = this.state;
     const icon = open ? 'keyboard_arrow_down' : 'keyboard_arrow_right';
     return (
-      <div style={this.constructor.styles.container} onClick={ this.toggle }>
-        <div onClick={ this.toggle }>
-          <FontIcon style={this.constructor.styles.icon} className="material-icons">{ icon }</FontIcon>
-          <span style={this.constructor.styles.label}>{ this.props.child.get('name') }</span>
+      <div style={this.constructor.styles.container}>
+        <div>
+          <FontIcon
+            style={this.constructor.styles.icon}å
+            className="material-icons"
+            onClick={ this.toggle }
+          >
+            { icon }
+          </FontIcon>
+          <span style={this.constructor.styles.label} onClick={this.onSelect}>
+            { this.props.child.get('name') }
+          </span>
         </div>
         {
           this.state.open && <div style={this.constructor.styles.childrenContainer}>
             {
               children.map((child, i) => {
-                let ref = this.props.reference + '.' + i;
-                return <Child key={ref} child={child} reference={ref} />
+                let ref = `${this.props.reference}.${i}`;
+                return (
+                  <Child key={ref} child={child} reference={ref} onSelect={this.props.onSelect} />
+                );
               }).toJS()
             }
           </div>
@@ -83,7 +98,8 @@ class Child extends React.Component {
 export default class Tree extends React.Component {
 
   static propTypes = {
-    page: State.Types.Page
+    page: State.Types.Page,
+    selectComponentWithReference: React.PropTypes.func.isRequired
   }
 
   static styles = {
@@ -109,7 +125,14 @@ export default class Tree extends React.Component {
       <div style={this.constructor.styles.container}>
         {
           this.props.page.get('children').map((child, i) => {
-            return <Child key={i} child={child} reference={i.toString()} />
+            return (
+              <Child
+                key={i}
+                child={child}
+                reference={i.toString()}
+                onSelect={this.props.selectComponentWithReference}
+              />
+            )
           }).toJS()
         }
       </div>

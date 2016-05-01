@@ -17,6 +17,9 @@ export default class EditableContainer extends React.Component {
   }
 
   static styles = {
+    container: {
+      cursor: 'pointer'
+    },
     highlight: {
       outline: `1px solid ${Style.vars.colors.lightBlue500}`,
       position: 'fixed',
@@ -69,6 +72,10 @@ export default class EditableContainer extends React.Component {
     });
   }
 
+  getChild() {
+    return this.refs.child;
+  }
+
   renderHighlight() {
     const highlightAttrs = this.state.highlightAttrs;
     if (!highlightAttrs) return null;
@@ -94,17 +101,13 @@ export default class EditableContainer extends React.Component {
     }
     child = React.cloneElement(React.Children.only(this.props.children), {
       ref: 'child'
-      // style: _.merge(
-      //   {},
-      //   child.props.style,
-      //   showHighlight && styles.highlight
-      // )
     });
     return (
       <span
         onMouseOver={this.onMouseOver}
         onMouseLeave={this.onMouseLeave}
         onClick={this.startEditing}
+        style={this.constructor.styles.container}
       >
         {showHighlight && this.renderHighlight()}
         {child}

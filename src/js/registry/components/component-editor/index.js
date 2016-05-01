@@ -74,9 +74,8 @@ export default class StandardComponentEditor extends React.Component {
       return null;
     }
     return (
-      <div>
+      <div key={editablePropName}>
         <Component
-          key={editablePropName}
           update={(newVal) => {
             this.updateProp(editablePropName, newVal);
           }}

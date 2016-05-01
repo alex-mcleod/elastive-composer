@@ -16,12 +16,6 @@ export default class StringEditor extends React.Component {
     currentValue: React.PropTypes.string.isRequired
   }
 
-  static styles = {
-    input: {
-      width: 'initial'
-    }
-  }
-
   onChange = (event) => {
     this.props.update(event.target.value);
   }
@@ -30,8 +24,12 @@ export default class StringEditor extends React.Component {
     return (
       <div>
         <TextField
-          floatingLabelText={ _.capitalize(this.props.name) } style={this.constructor.styles.input}
-          onChange={this.onChange} type="text" value={this.props.currentValue}
+          floatingLabelText={ _.capitalize(this.props.name) }
+          onChange={this.onChange}
+          type="text"
+          value={this.props.currentValue}
+          multiLine
+          fullWidth
         />
       </div>
     );
