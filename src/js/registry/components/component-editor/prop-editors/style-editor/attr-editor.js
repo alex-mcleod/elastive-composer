@@ -5,7 +5,8 @@ import Radium from 'radium';
 import {
   TextField,
   AutoComplete,
-  Popover
+  Popover,
+  FontIcon
 } from 'material-ui';
 
 import cssProps from './css-props';
@@ -83,8 +84,16 @@ export class AttrEditor extends React.Component {
   }
 
   static styles = {
-    input: {
-      width: 'initial'
+    container: {
+      position: 'relative'
+    },
+    icon: {
+      fontSize: 12,
+      position: 'absolute',
+      top: 17,
+      right: 3,
+      cursor: 'pointer',
+      zIndex: 1
     }
   }
 
@@ -105,7 +114,13 @@ export class AttrEditor extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={this.constructor.styles.container}>
+        <FontIcon
+          style={this.constructor.styles.icon} className="material-icons"
+          onClick={this.removeAttr}
+        >
+          remove
+        </FontIcon>
         <TextField
           floatingLabelText={ _.startCase(this.props.name) }
           style={this.constructor.styles.input}
@@ -113,6 +128,7 @@ export class AttrEditor extends React.Component {
           type="text"
           value={this.props.currentValue}
           onBlur={this.onBlur}
+          fullWidth
           ref="textField"
         />
       </div>
