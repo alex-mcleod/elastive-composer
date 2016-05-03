@@ -28,6 +28,9 @@ class Child extends React.Component {
       padding: SPACING,
       cursor: 'pointer'
     },
+    selected: {
+      textDecoration: 'underline'
+    },
     childrenContainer: {
       marginTop: SPACING,
       marginBottom: -SPACING
@@ -62,9 +65,12 @@ class Child extends React.Component {
     const children = this.props.child.get('children');
     const { open } = this.state;
     const icon = open ? 'keyboard_arrow_down' : 'keyboard_arrow_right';
+    const isSelected = this.props.reference === this.props.selectedComponentRef;
+    let selectedStyle;
+    if (isSelected) selectedStyle = this.constructor.styles.selected;
     return (
       <div style={this.constructor.styles.container}>
-        <div>
+        <div style={selectedStyle}>
           <FontIcon
             style={this.constructor.styles.icon}å
             className="material-icons"
@@ -82,7 +88,13 @@ class Child extends React.Component {
               children.map((child, i) => {
                 let ref = `${this.props.reference}.${i}`;
                 return (
-                  <Child key={ref} child={child} reference={ref} onSelect={this.props.onSelect} />
+                  <Child
+                    key={ref}
+                    child={child}
+                    reference={ref}
+                    onSelect={this.props.onSelect}
+                    selectedComponentRef={this.props.selectedComponentRef}
+                  />
                 );
               }).toJS()
             }
@@ -131,6 +143,7 @@ export default class Tree extends React.Component {
                 child={child}
                 reference={i.toString()}
                 onSelect={this.props.selectComponentWithReference}
+                selectedComponentRef={this.props.selectedComponentRef}
               />
             )
           }).toJS()

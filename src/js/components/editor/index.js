@@ -76,6 +76,10 @@ class Editor extends React.Component {
     });
   }
 
+  getEditableComponentRef() {
+    return this.state.editableComponent ? this.state.editableComponent.props.reference : null;
+  }
+
   onPageComponentClick = (component) => {
     if (this.state.newComponentData) {
       this.addNewChild(component, this.state.newComponentData);
@@ -162,6 +166,8 @@ class Editor extends React.Component {
   renderChildren(children, pageLoc = '') {
     if (!children) return null;
     if (_.isString(children)) return children;
+    // TODO - Put this check into a function
+    let editableRef = this.getEditableComponentRef();
     return _.map(children, (child, i) => {
       let Component = Registry.getComponentByLibAndName(child.library, child.name);
       let ref = pageLoc + i;
@@ -170,7 +176,7 @@ class Editor extends React.Component {
           key={ref}
           ref={ref + 'Container'}
           startEditing={this.onPageComponentClick}
-          componentBeingEdited={this.state.editableComponent}
+          isBeingEdited={editableRef === ref}
           showHoverHighlight={Boolean(this.state.newComponentData)}
         >
           <Component
@@ -190,6 +196,7 @@ class Editor extends React.Component {
 
   render() {
     const { page } = this.state;
+    const selectedRef = this.getEditableComponentRef();
     return (
       <div style={this.constructor.styles.container}>
         <MainToolbar
@@ -201,6 +208,7 @@ class Editor extends React.Component {
             <Tree
               page={page}
               selectComponentWithReference={this.selectComponentWithReference}
+              selectedComponentRef={this.getEditableComponentRef()}
             />
           )
         }

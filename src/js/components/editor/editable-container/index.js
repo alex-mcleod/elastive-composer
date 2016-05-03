@@ -13,7 +13,7 @@ export default class EditableContainer extends React.Component {
   static propTypes = {
     startEditing: React.PropTypes.func.isRequired,
     showHoverHighlight: React.PropTypes.bool.isRequired,
-    componentBeingEdited: React.PropTypes.object
+    isBeingEdited: React.PropTypes.bool.isRequired
   }
 
   static styles = {
@@ -93,7 +93,7 @@ export default class EditableContainer extends React.Component {
     let child = React.Children.only(this.props.children);
     let showHighlight;
     if (!this.props.showHoverHighlight) {
-      if (this.refs && this.refs.child && this.refs.child === this.props.componentBeingEdited) {
+      if (this.props.isBeingEdited) {
         showHighlight = true;
       }
     } else if (this.props.showHoverHighlight && this.state.mouseOver) {
