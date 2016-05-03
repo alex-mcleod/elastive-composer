@@ -63,6 +63,12 @@ export default class StyleEditor extends React.Component {
     }));
   }
 
+  removeAttr = (attr) => {
+    let newVal = _.clone(this.props.currentValue);
+    delete newVal[attr];
+    this.props.update(newVal);
+  }
+
   onNewAttrSelect = (attr) => {
     // Will create a new attr on style object
     this.updateAttr(attr, '');
@@ -73,7 +79,7 @@ export default class StyleEditor extends React.Component {
     return (
       <div key={attr}>
         <AttrEditor
-          ref={`${attr}Editor`}
+          ref={`${attr}Editor`} remove={ _.partial(this.removeAttr, attr) }
           name={attr} update={ (newVal) => this.updateAttr(attr, newVal) } currentValue={ curVal }
         />
       </div>

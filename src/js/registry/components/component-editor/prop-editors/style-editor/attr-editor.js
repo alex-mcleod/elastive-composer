@@ -77,6 +77,7 @@ export class AttrEditor extends React.Component {
   static propTypes = {
     name: React.PropTypes.string.isRequired,
     update: React.PropTypes.func.isRequired,
+    remove: React.PropTypes.func.isRequired,
     currentValue: React.PropTypes.oneOfType([
       React.PropTypes.string,
       React.PropTypes.number
@@ -102,10 +103,14 @@ export class AttrEditor extends React.Component {
     // Prevent react warning about unitless string
     // values
     const asInt = parseInt(val);
-    if (!_.isNaN(asInt)) {
+    if (!_.isNaN(asInt) && !/[a-z]/.test(val.toLowerCase())) {
       val = asInt;
     }
     this.props.update(val);
+  }
+
+  removeAttr = () => {
+    this.props.remove();
   }
 
   focus() {
